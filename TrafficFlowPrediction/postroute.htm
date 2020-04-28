@@ -1,0 +1,85 @@
+
+    
+        for (i = 0; i < markers.length; i++) {
+            var data = markers[i]
+            var myLatlng = new google.maps.LatLng(data.lat, data.lng);
+            lat_lng.push(myLatlng);
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: data.title
+            });
+            latlngbounds.extend(marker.position);
+            (function (marker, data) {
+                google.maps.event.addListener(marker, "click", function (e) {
+                    infoWindow.setContent(data.description);
+                    infoWindow.open(map, marker);
+                });
+            })(marker, data);
+        }
+        map.setCenter(latlngbounds.getCenter());
+        map.fitBounds(latlngbounds);
+ 
+        //***********ROUTING****************//
+ 
+        //Initialize the Path Array
+        var path = new google.maps.MVCArray();
+ 
+        //Initialize the Direction Service
+        var service = new google.maps.DirectionsService();
+ 
+        //Set the Path Stroke Color
+        var poly = new google.maps.Polyline({ map: map, strokeColor: '#F00' });
+ 
+ 
+        for (var i = 0; i < lat_lng.length; i++) {
+    if ((i + 1) < lat_lng.length) {
+      var src = lat_lng[i];
+      var des = lat_lng[i + 1];
+	  var scol = lat_longcolor[i];
+      getDirections(src, des, scol, map);
+	  
+    }
+	i++;
+  }
+ 
+
+ 
+      
+    }
+	        function getDirections(src, des, color, map) {
+  //Intialize the Direction Service
+  var service = new google.maps.DirectionsService();
+  service.route({
+    origin: src,
+    destination: des,
+    travelMode: google.maps.DirectionsTravelMode.DRIVING
+  }, function(result, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      //Intialize the Path Array
+      var path = [];
+      for (var i = 0; i < result.routes[0].overview_path.length; i++) {
+        path.push(result.routes[0].overview_path[i]);
+      }
+      //Set the Path Stroke Color
+      var polyOptions = {
+        strokeColor: color,
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        path: path,
+        map: map
+      }
+      poly = new google.maps.Polyline(polyOptions);
+      poly.setMap(map);
+
+    }
+  });
+}
+</script>
+<div id="dvMap" style="width: 100%; height: 700px">
+</div>
+</head>
+
+
+
+</html>

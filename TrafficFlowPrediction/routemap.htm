@@ -1,0 +1,195 @@
+<html>
+<head>
+<title>Google Map Hello World Example</title>
+<style type="text/css">
+div#map_container{
+	width:100%;
+	height:700px;
+}
+</style>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+          var markers = [    
+{
+ "title": ' Traffic-36.43',
+ "lat": ' 12.957629',
+ "lng": '77.7458'
+},
+{
+ "title": ' Traffic-16.43',
+ "lat": ' 12.992084',
+ "lng": '77.71601'
+},
+{
+ "title": ' Traffic-47.14',
+ "lat": ' 12.983764',
+ "lng": '77.752515'
+},
+{
+ "title": ' Traffic-16.43',
+ "lat": ' 12.956894',
+ "lng": '77.701093'
+},
+{
+ "title": ' Traffic-46.29',
+ "lat": ' 12.995495',
+ "lng": '77.758004'
+},
+{
+ "title": ' Traffic-46.29',
+ "lat": ' 12.983318',
+ "lng": '77.767135'
+},
+{
+ "title": ' Traffic-16.43',
+ "lat": ' 12.997265',
+ "lng": '77.670333'
+},
+{
+ "title": ' Traffic-55.86',
+ "lat": ' 12.98298',
+ "lng": '77.762073'
+},
+{
+ "title": ' Traffic--1',
+ "lat": ' 12.95985',
+ "lng": '77.648199'
+},
+{
+ "title": ' Traffic-7.71',
+ "lat": ' 12.994246',
+ "lng": '77.700268'
+},
+{
+ "title": ' Traffic-45.86',
+ "lat": ' 12.975536',
+ "lng": '77.750798'
+},
+{
+ "title": ' Traffic-36.43',
+ "lat": ' 12.987498',
+ "lng": '77.736413'
+},
+{
+ "title": ' Traffic-46.43',
+ "lat": ' 13.003062',
+ "lng": '77.757115'
+},
+{
+ "title": ' Traffic-16.43',
+ "lat": ' 12.995234',
+ "lng": '77.696482'
+}
+
+    ];
+    window.onload = function () {
+        var mapOptions = {
+            center: new google.maps.LatLng(markers[0].lat, markers[0].lng),
+            zoom: 10,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById("dvMap"), mapOptions);
+        var infoWindow = new google.maps.InfoWindow();
+        var lat_lng = new Array();
+		var lat_longcolor = new Array();
+        var latlngbounds = new google.maps.LatLngBounds();
+        
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#00FF00");
+lat_longcolor.push("#00FF00");
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#00FF00");
+lat_longcolor.push("#00FF00");
+lat_longcolor.push("#00FF00");
+lat_longcolor.push("#00FF00");
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#FF0000");
+lat_longcolor.push("#FF0000");
+
+    
+        for (i = 0; i < markers.length; i++) {
+            var data = markers[i]
+            var myLatlng = new google.maps.LatLng(data.lat, data.lng);
+            lat_lng.push(myLatlng);
+            var marker = new google.maps.Marker({
+                position: myLatlng,
+                map: map,
+                title: data.title
+            });
+            latlngbounds.extend(marker.position);
+            (function (marker, data) {
+                google.maps.event.addListener(marker, "click", function (e) {
+                    infoWindow.setContent(data.description);
+                    infoWindow.open(map, marker);
+                });
+            })(marker, data);
+        }
+        map.setCenter(latlngbounds.getCenter());
+        map.fitBounds(latlngbounds);
+ 
+        //***********ROUTING****************//
+ 
+        //Initialize the Path Array
+        var path = new google.maps.MVCArray();
+ 
+        //Initialize the Direction Service
+        var service = new google.maps.DirectionsService();
+ 
+        //Set the Path Stroke Color
+        var poly = new google.maps.Polyline({ map: map, strokeColor: '#F00' });
+ 
+ 
+        for (var i = 0; i < lat_lng.length; i++) {
+    if ((i + 1) < lat_lng.length) {
+      var src = lat_lng[i];
+      var des = lat_lng[i + 1];
+	  var scol = lat_longcolor[i];
+      getDirections(src, des, scol, map);
+	  
+    }
+	i++;
+  }
+ 
+
+ 
+      
+    }
+	        function getDirections(src, des, color, map) {
+  //Intialize the Direction Service
+  var service = new google.maps.DirectionsService();
+  service.route({
+    origin: src,
+    destination: des,
+    travelMode: google.maps.DirectionsTravelMode.DRIVING
+  }, function(result, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      //Intialize the Path Array
+      var path = [];
+      for (var i = 0; i < result.routes[0].overview_path.length; i++) {
+        path.push(result.routes[0].overview_path[i]);
+      }
+      //Set the Path Stroke Color
+      var polyOptions = {
+        strokeColor: color,
+        strokeOpacity: 1.0,
+        strokeWeight: 2,
+        path: path,
+        map: map
+      }
+      poly = new google.maps.Polyline(polyOptions);
+      poly.setMap(map);
+
+    }
+  });
+}
+</script>
+<div id="dvMap" style="width: 100%; height: 700px">
+</div>
+</head>
+
+
+
+</html>
